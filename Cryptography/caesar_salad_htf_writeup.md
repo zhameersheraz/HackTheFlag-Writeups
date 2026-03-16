@@ -1,75 +1,38 @@
-# Commitment Issues - picoCTF Writeup
+# Caesar Salad - Hack the Flag Writeup
 
-**Challenge:** Commitment Issues  
-**Category:** General Skills  
+**Challenge:** Caesar Salad  
+**Category:** Cryptography  
 **Difficulty:** Easy  
-**Points:** (not specified)  
-**Flag:** `picoCTF{s@n1t1z3_cf09a485}`
+**Points:** 100 pts  
+**Flag:** `ctf{caesar_cipher_cracked}`
 
 ---
 
 ## Description
 
-Ever had to keep your commits... secret? Download the challenge files here: challenge.zip
+Decrypt this Caesar cipher message: `fwi{fdhvdu_flskhu_fudfnhg}`. The shift value is a small number.
+
+---
+
+## Hints
+
+1. Caesar cipher shifts letters by a fixed number. Try shift values 1-25.
 
 ---
 
 ## Solution
 
-### Step 1: Download and Extract the File
+### Step 1: Use the caesar Command
+
+I used the `caesar` command on Kali Linux which tries all 25 possible shifts at once:
 
 ```bash
-wget https://artifacts.picoctf.net/c_titan/137/challenge.zip
-unzip challenge.zip
-cd drop-in
+echo "fwi{fdhvdu_flskhu_fudfnhg}" | caesar
 ```
 
-### Step 2: Read message.txt
-
-```bash
-cat message.txt
+**Output (looking for the readable line):**
 ```
-
-**Output:**
-```
-TOP SECRET
-```
-
-The file just says "TOP SECRET" — the flag was removed!
-
-### Step 3: Check Git Commit History
-
-```bash
-git reflog
-```
-
-**Output:**
-```
-ef0b7cc (HEAD -> master) HEAD@{0}: commit: remove sensitive info
-ea859bf HEAD@{1}: commit (initial): create flag
-```
-
-I can see there are 2 commits:
-- The latest commit (`ef0b7cc`) removed the sensitive info
-- The first commit (`ea859bf`) originally created the flag
-
-### Step 4: Go Back to the First Commit
-
-I used `git checkout` to travel back to the first commit before the flag was deleted:
-
-```bash
-git checkout ea859bf
-```
-
-### Step 5: Read message.txt Again
-
-```bash
-cat message.txt
-```
-
-**Output:**
-```
-picoCTF{s@n1t1z3_cf09a485}
+ctf{caesar_cipher_cracked}
 ```
 
 Got the flag! 🎯
@@ -78,54 +41,50 @@ Got the flag! 🎯
 
 ## Why This Works
 
-### Git Never Truly Deletes Anything
+### What is the Caesar Cipher?
 
-Even when someone removes a file or overwrites content in a commit, **Git keeps the full history** of all previous commits. You can always go back to any previous state using `git checkout` with the commit hash.
+The **Caesar cipher** shifts each letter by a fixed number of positions in the alphabet. To decrypt it, you just shift in the opposite direction.
 
-In this challenge, the developer thought they were hiding the flag by making a new commit that replaced the content. But the original commit with the flag was still stored in Git history!
+The `caesar` command tries all 25 possible shifts and prints all results — you just look for the one that makes sense.
+
+In this case the shift was **3**:
+```
+f → c (shift back 3)
+w → t (shift back 3)
+i → f (shift back 3)
+```
+
+So `fwi` becomes `ctf`!
 
 ### Simple Breakdown
 
 ```
-Extract zip file
+Get ciphertext: fwi{fdhvdu_flskhu_fudfnhg}
       |
       v
-cat message.txt shows "TOP SECRET" (flag was deleted)
+Run: echo "ciphertext" | caesar
       |
       v
-git reflog shows 2 commits
+Look for the readable output
       |
       v
-First commit is named "create flag"
-      |
-      v
-git checkout ea859bf (go back to first commit)
-      |
-      v
-cat message.txt now shows the flag!
+Flag found: ctf{caesar_cipher_cracked}
 ```
+
+---
+
+## Alternative Method: dcode.fr
+
+1. Go to https://www.dcode.fr/caesar-cipher
+2. Paste `fwi{fdhvdu_flskhu_fudfnhg}` in the input
+3. Click **Decrypt** and it will try all shifts automatically
 
 ---
 
 ## Commands Used
 
 ```bash
-# Download and extract
-wget https://artifacts.picoctf.net/c_titan/137/challenge.zip
-unzip challenge.zip
-cd drop-in
-
-# Read the file
-cat message.txt
-
-# Check commit history
-git reflog
-
-# Go back to the first commit
-git checkout ea859bf
-
-# Read the file again
-cat message.txt
+echo "fwi{fdhvdu_flskhu_fudfnhg}" | caesar
 ```
 
 ---
@@ -133,7 +92,7 @@ cat message.txt
 ## Flag
 
 ```
-picoCTF{s@n1t1z3_cf09a485}
+ctf{caesar_cipher_cracked}
 ```
 
 ---
@@ -142,19 +101,13 @@ picoCTF{s@n1t1z3_cf09a485}
 
 | Tool | Purpose |
 |------|---------|
-| `wget` | Download the zip file |
-| `unzip` | Extract the zip file |
-| `cat` | Read message.txt |
-| `git reflog` | View all commits and their hashes |
-| `git checkout` | Travel back to a previous commit |
+| `caesar` (bsdgames) | Try all 25 Caesar cipher shifts |
 
 ---
 
 ## Key Takeaways
 
-- Git stores the **full history** of all commits — deleting content in a new commit does not erase old commits
-- `git reflog` shows every commit ever made, including ones that removed files
-- `git checkout <hash>` lets you travel back to any previous commit
-- Never store sensitive info like flags, passwords or API keys in Git — even deleted commits can be recovered
-- This is why "sanitizing" commit history properly requires tools like `git filter-branch` or `git filter-repo`o\
-
+- Caesar cipher is one of the oldest and simplest ciphers
+- It just shifts each letter by a fixed number
+- The `caesar` command tries all 25 shifts so you don't need to know the shift value
+- `fwi` decoding to `ctf` is the classic giveaway for Caesar cipher CTF challenges
