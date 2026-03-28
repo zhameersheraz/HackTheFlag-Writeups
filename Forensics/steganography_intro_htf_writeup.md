@@ -1,10 +1,10 @@
 # Steganography Intro — Hack the Flag Writeup
 
-**Challenge:** Steganography Intro
-**Category:** Forensics
-**Difficulty:** Easy
-**Points:** 100 pts
-**Flag:** `ctf{st3g0_b3ginn3r}`
+**Challenge:** Steganography Intro  
+**Category:** Forensics  
+**Difficulty:** Easy  
+**Points:** 100 pts  
+**Flag:** `ctf{st3g0_b3ginn3r}`  
 
 ---
 
